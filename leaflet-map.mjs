@@ -1,3 +1,14 @@
+(function injectLeafletCSS() {
+  const id = 'leaflet-css';
+  if (!document.getElementById(id)) {
+    const link = document.createElement('link');
+    link.id = id;
+    link.rel = 'stylesheet';
+    link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(link);
+  }
+})();
+
 (function waitForFormioAndRegister() {
   if (!window.Formio || !Formio.Components || !Formio.Components.components) {
     return setTimeout(waitForFormioAndRegister, 50);
