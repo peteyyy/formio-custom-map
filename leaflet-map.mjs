@@ -35,12 +35,12 @@
     }
 
     render() {
-      return super.render(`
-        <div style="height:300px; border:1px solid #ccc;" ref="mapContainer"></div>
-      `);
+      console.log('[LeafletMap] render() called');
+      return '<div style="padding: 1rem; background: yellow;">Hello from LeafletMap</div>';
     }
 
     attach(element) {
+      console.log('[LeafletMap] attach() called');
       super.attach(element);
 
       const waitForLeaflet = () => {
