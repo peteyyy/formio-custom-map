@@ -20,7 +20,7 @@
         label: 'Leaflet Map',
         type: 'leafletmap',
         key: 'leafletmap',
-        input: false
+        input: true
       }, ...extend);
     }
 
