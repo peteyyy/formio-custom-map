@@ -20,7 +20,7 @@
         label: 'Leaflet Map',
         type: 'leafletmap',
         key: 'leafletmap',
-        input: false // no data for now
+        input: false
       }, ...extend);
     }
 
@@ -48,6 +48,9 @@
           return setTimeout(waitForLeaflet, 50);
         }
 
+        console.log('[LeafletMap] Leaflet detected:', typeof L);
+        console.log('[LeafletMap] Container ref:', this.refs.mapContainer);
+
         const lat = 41.8781;
         const lng = -87.6298;
         const radius = 800;
@@ -65,6 +68,12 @@
         }).addTo(map);
 
         L.marker([lat, lng]).addTo(map);
+
+        // Force proper map size layout
+        setTimeout(() => {
+          map.invalidateSize();
+          console.log('[LeafletMap] invalidateSize() called');
+        }, 0);
       };
 
       waitForLeaflet();
@@ -73,5 +82,5 @@
     }
   });
 
-  console.log('[LeafletMap] Hardcoded map initialized.');
+  console.log('[LeafletMap] Component registered.');
 })();
