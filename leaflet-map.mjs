@@ -61,57 +61,57 @@
 
     attach(element) {
       console.log('[LeafletMap] attach() called');
-      super.attach(element);
+      return super.attach(element).then(() => {
+        const waitForLeaflet = () => {
+          if (!window.leafletReady) {
+            console.log('[LeafletMap] Waiting: leafletReady false');
+            return setTimeout(waitForLeaflet, 50);
+          }
+          if (!window.L) {
+            console.log('[LeafletMap] Waiting: L not defined');
+            return setTimeout(waitForLeaflet, 50);
+          }
+          if (!window.L.map) {
+            console.log('[LeafletMap] Waiting: L.map not defined');
+            return setTimeout(waitForLeaflet, 50);
+          }
+          if (!this.refs.mapContainer) {
+            console.log('[LeafletMap] Waiting: this.refs.mapContainer missing');
+            return setTimeout(waitForLeaflet, 50);
+          }
 
-      const waitForLeaflet = () => {
-        if (!window.leafletReady) {
-          console.log('[LeafletMap] Waiting: leafletReady false');
-          return setTimeout(waitForLeaflet, 50);
-        }
-        if (!window.L) {
-          console.log('[LeafletMap] Waiting: L not defined');
-          return setTimeout(waitForLeaflet, 50);
-        }
-        if (!window.L.map) {
-          console.log('[LeafletMap] Waiting: L.map not defined');
-          return setTimeout(waitForLeaflet, 50);
-        }
-        if (!this.refs.mapContainer) {
-          console.log('[LeafletMap] Waiting: this.refs.mapContainer missing');
-          return setTimeout(waitForLeaflet, 50);
-        }
+          console.log('[LeafletMap] Leaflet detected:', typeof L);
+          console.log('[LeafletMap] Container ref:', this.refs.mapContainer);
 
-        console.log('[LeafletMap] Leaflet detected:', typeof L);
-        console.log('[LeafletMap] Container ref:', this.refs.mapContainer);
+          const lat = 41.8781;
+          const lng = -87.6298;
+          const radius = 800;
 
-        const lat = 41.8781;
-        const lng = -87.6298;
-        const radius = 800;
+          const map = L.map(this.refs.mapContainer).setView([lat, lng], 14);
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+          }).addTo(map);
 
-        const map = L.map(this.refs.mapContainer).setView([lat, lng], 14);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '© OpenStreetMap contributors'
-        }).addTo(map);
+          L.circle([lat, lng], {
+            color: 'blue',
+            fillColor: '#3f7df3',
+            fillOpacity: 0.4,
+            radius: radius
+          }).addTo(map);
 
-        L.circle([lat, lng], {
-          color: 'blue',
-          fillColor: '#3f7df3',
-          fillOpacity: 0.4,
-          radius: radius
-        }).addTo(map);
+          L.marker([lat, lng]).addTo(map);
 
-        L.marker([lat, lng]).addTo(map);
+          setTimeout(() => {
+            map.invalidateSize();
+            console.log('[LeafletMap] invalidateSize() called');
+          }, 0);
+        };
 
-        setTimeout(() => {
-          map.invalidateSize();
-          console.log('[LeafletMap] invalidateSize() called');
-        }, 0);
-      };
-
-      waitForLeaflet();
-
-      return element;
+        waitForLeaflet();
+        return element;
+      });
     }
+
   });
 
   console.log('[LeafletMap] Component registered.');
