@@ -54,7 +54,7 @@
       console.log('[LeafletMap] render() called');
       return super.render(`
         <div ref="element">
-          <div ref="mapContainer" style="height:300px; border:1px solid #ccc;"></div>
+          <div data-map-container style="height:300px; border:1px solid #ccc;"></div>
         </div>
       `);
     }
@@ -63,6 +63,8 @@
       console.log('[LeafletMap] attach() called');
       return super.attach(element).then(() => {
         const waitForLeaflet = () => {
+          const container = this.element.querySelector('[data-map-container]');
+
           if (!window.leafletReady) {
             console.log('[LeafletMap] Waiting: leafletReady false');
             return setTimeout(waitForLeaflet, 50);
@@ -75,19 +77,19 @@
             console.log('[LeafletMap] Waiting: L.map not defined');
             return setTimeout(waitForLeaflet, 50);
           }
-          if (!this.refs.mapContainer) {
-            console.log('[LeafletMap] Waiting: this.refs.mapContainer missing');
+          if (!container) {
+            console.log('[LeafletMap] Waiting: map container not in DOM');
             return setTimeout(waitForLeaflet, 50);
           }
 
           console.log('[LeafletMap] Leaflet detected:', typeof L);
-          console.log('[LeafletMap] Container ref:', this.refs.mapContainer);
+          console.log('[LeafletMap] Container:', container);
 
           const lat = 41.8781;
           const lng = -87.6298;
           const radius = 800;
 
-          const map = L.map(this.refs.mapContainer).setView([lat, lng], 14);
+          const map = L.map(container).setView([lat, lng], 14);
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
           }).addTo(map);
@@ -111,6 +113,7 @@
         return element;
       });
     }
+
 
   });
 
