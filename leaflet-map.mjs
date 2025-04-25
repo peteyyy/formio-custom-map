@@ -62,7 +62,20 @@
       super.attach(element);
 
       const waitForLeaflet = () => {
-        if (!window.leafletReady || !window.L || !window.L.map || !this.refs.mapContainer) {
+        if (!window.leafletReady) {
+          console.log('[LeafletMap] Waiting: leafletReady false');
+          return setTimeout(waitForLeaflet, 50);
+        }
+        if (!window.L) {
+          console.log('[LeafletMap] Waiting: L not defined');
+          return setTimeout(waitForLeaflet, 50);
+        }
+        if (!window.L.map) {
+          console.log('[LeafletMap] Waiting: L.map not defined');
+          return setTimeout(waitForLeaflet, 50);
+        }
+        if (!this.refs.mapContainer) {
+          console.log('[LeafletMap] Waiting: this.refs.mapContainer missing');
           return setTimeout(waitForLeaflet, 50);
         }
 
