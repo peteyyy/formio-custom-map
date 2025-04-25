@@ -89,16 +89,9 @@
           const lng = -87.6298;
           const radius = 800;
 
-          const map = L.map(container).setView([lat, lng], 14);
+          const map = L.map(container).setView([lat, lng], 17);
           L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors'
-          }).addTo(map);
-
-          L.circle([lat, lng], {
-            color: 'blue',
-            fillColor: '#3f7df3',
-            fillOpacity: 0.4,
-            radius: radius
           }).addTo(map);
 
           L.marker([lat, lng]).addTo(map);
