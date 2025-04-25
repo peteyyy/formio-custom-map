@@ -54,7 +54,7 @@
       console.log('[LeafletMap] render() called');
       return super.render(`
         <div ref="element">
-          <div data-map-container style="height:300px; border:1px solid #ccc;"></div>
+          <div data-map-container style="width: 100%; max-width: 500px; height: 400px; margin: 0 auto; border:1px solid #ccc;"></div>
         </div>
       `);
     }
