@@ -25,10 +25,9 @@
   }
 })();
 
-
 (function waitForFormioAndRegister() {
-  if (!window.leafletReady || !window.L || !window.L.map || !this.refs.mapContainer) {
-    return setTimeout(waitForLeaflet, 50);
+  if (!window.Formio || !Formio.Components || !Formio.Components.components) {
+    return setTimeout(waitForFormioAndRegister, 50);
   }
 
   Formio.Components.addComponent('leafletmap', class extends Formio.Components.components.field {
@@ -63,7 +62,7 @@
       super.attach(element);
 
       const waitForLeaflet = () => {
-        if (!window.L || !window.L.map || !this.refs.mapContainer) {
+        if (!window.leafletReady || !window.L || !window.L.map || !this.refs.mapContainer) {
           return setTimeout(waitForLeaflet, 50);
         }
 
