@@ -57,7 +57,7 @@
       super.attach(element);
 
       const waitForLeaflet = () => {
-        if (!window.L || !this.refs.mapContainer) {
+        if (!window.L || !window.L.map || !this.refs.mapContainer) {
           return setTimeout(waitForLeaflet, 50);
         }
 
