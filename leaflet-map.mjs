@@ -9,6 +9,17 @@
   }
 })();
 
+(function injectLeafletJS() {
+  const id = 'leaflet-js';
+  if (!document.getElementById(id)) {
+    const script = document.createElement('script');
+    script.id = id;
+    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    script.onload = () => console.log('[LeafletMap] Leaflet JS loaded');
+    document.head.appendChild(script);
+  }
+})();
+
 (function waitForFormioAndRegister() {
   if (!window.Formio || !Formio.Components || !Formio.Components.components) {
     return setTimeout(waitForFormioAndRegister, 50);
