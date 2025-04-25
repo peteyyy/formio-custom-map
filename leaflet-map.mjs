@@ -53,7 +53,9 @@
     render() {
       console.log('[LeafletMap] render() called');
       return super.render(`
-        <div ref="mapContainer" style="height:300px; border:1px solid #ccc;"></div>
+        <div ref="element">
+          <div ref="mapContainer" style="height:300px; border:1px solid #ccc;"></div>
+        </div>
       `);
     }
 
