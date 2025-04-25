@@ -15,14 +15,20 @@
     const script = document.createElement('script');
     script.id = id;
     script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-    script.onload = () => console.log('[LeafletMap] Leaflet JS loaded');
+    script.onload = () => {
+      console.log('[LeafletMap] Leaflet JS loaded');
+      window.leafletReady = true;
+    };
     document.head.appendChild(script);
+  } else {
+    window.leafletReady = true;
   }
 })();
 
+
 (function waitForFormioAndRegister() {
-  if (!window.Formio || !Formio.Components || !Formio.Components.components) {
-    return setTimeout(waitForFormioAndRegister, 50);
+  if (!window.leafletReady || !window.L || !window.L.map || !this.refs.mapContainer) {
+    return setTimeout(waitForLeaflet, 50);
   }
 
   Formio.Components.addComponent('leafletmap', class extends Formio.Components.components.field {
