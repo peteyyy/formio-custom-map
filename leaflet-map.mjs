@@ -36,7 +36,9 @@
 
     render() {
       console.log('[LeafletMap] render() called');
-      return '<div style="padding: 1rem; background: yellow;">Hello from LeafletMap</div>';
+      return super.render(`
+        <div ref="mapContainer" style="height:300px; border:1px solid #ccc;"></div>
+      `);
     }
 
     attach(element) {
@@ -69,7 +71,6 @@
 
         L.marker([lat, lng]).addTo(map);
 
-        // Force proper map size layout
         setTimeout(() => {
           map.invalidateSize();
           console.log('[LeafletMap] invalidateSize() called');
