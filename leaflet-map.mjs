@@ -66,7 +66,6 @@
       return editForm;
     }
 
-
     render() {
       console.log('[LeafletMap] render() called');
       return super.render(`
@@ -102,38 +101,56 @@
           console.log('[LeafletMap] Leaflet detected:', typeof L);
           console.log('[LeafletMap] Container:', container);
 
-          const lat = 41.8781;
-          const lng = -87.6298;
+          const initialLat = 41.8781; // Chicago default
+          const initialLng = -87.6298;
 
-          const map = L.map(container).setView([lat, lng], 17);
+          const map = L.map(container).setView([initialLat, initialLng], 17);
           L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
             detectRetina: true
           }).addTo(map);
 
-          const marker = L.marker([lat, lng]).addTo(map);
+          const marker = L.marker([initialLat, initialLng]).addTo(map);
 
           setTimeout(() => {
             map.invalidateSize();
             console.log('[LeafletMap] invalidateSize() called');
           }, 0);
 
-          // Watch for address field changes
-          this.on('change', (event) => {
-            if (
-              event.changed &&
-              this.component.linkedAddressField &&
-              event.changed[this.component.linkedAddressField]
-            ) {
-              const address = event.changed[this.component.linkedAddressField];
-              if (address) {
-                console.log('[LeafletMap] Address changed:', address);
-                this.geocodeAddress(address).then(({ lat, lng }) => {
+          const moveMapToAddress = (addressValue) => {
+            if (addressValue) {
+              if (typeof addressValue === 'object' && addressValue.lat && addressValue.lon) {
+                console.log('[LeafletMap] Using lat/lon from address object');
+                const lat = parseFloat(addressValue.lat);
+                const lng = parseFloat(addressValue.lon);
+                map.setView([lat, lng], 17);
+                marker.setLatLng([lat, lng]);
+              } 
+              else if (typeof addressValue === 'string') {
+                console.log('[LeafletMap] Address is string, geocoding:', addressValue);
+                this.geocodeAddress(addressValue).then(({ lat, lng }) => {
                   map.setView([lat, lng], 17);
                   marker.setLatLng([lat, lng]);
                 }).catch(err => console.error('[LeafletMap] Geocoding failed:', err));
               }
+              else {
+                console.warn('[LeafletMap] Unexpected address format:', addressValue);
+              }
             }
+          };
+
+          // Handle initial value (when form loads)
+          const currentAddress = this.root?.submission?.data?.[this.component.linkedAddressField];
+          if (currentAddress) {
+            console.log('[LeafletMap] Found existing address:', currentAddress);
+            moveMapToAddress(currentAddress);
+          }
+
+          // Handle future changes to address field
+          this.on('change', (event) => {
+            const changedAddress = event.changed?.[this.component.linkedAddressField];
+            console.log('[LeafletMap] Address field changed:', changedAddress);
+            moveMapToAddress(changedAddress);
           });
         };
 
@@ -143,7 +160,7 @@
     }
 
     geocodeAddress(address) {
-      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+      const url = `https://nominatim.openstreetmap.org/search?format=json&countrycodes=us&limit=1&q=${encodeURIComponent(address)}`;
       return fetch(url)
         .then(res => res.json())
         .then(data => {
