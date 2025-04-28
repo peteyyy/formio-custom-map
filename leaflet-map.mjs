@@ -51,19 +51,21 @@
       };
     }
 
-    static editForm() {
-      return {
-        components: [
-          {
-            type: 'textfield',
-            key: 'linkedAddressField',
-            label: 'Linked Address Field Key',
-            tooltip: 'Enter the key of the address field to link the map to.',
-            input: true
-          }
-        ]
-      };
+    static editForm(...extend) {
+      const editForm = Formio.Components.components.field.editForm(...extend);
+
+      editForm.components.push({
+        type: 'textfield',
+        key: 'linkedAddressField',
+        label: 'Linked Address Field Key',
+        tooltip: 'Enter the key of the address field to link the map to.',
+        weight: 10,
+        input: true
+      });
+
+      return editForm;
     }
+
 
     render() {
       console.log('[LeafletMap] render() called');
