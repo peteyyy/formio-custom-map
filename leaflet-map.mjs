@@ -70,7 +70,7 @@
       console.log('[LeafletMap] render() called');
       return super.render(`
         <div ref="element">
-          <div data-map-container style="width: 100%; max-width: 500px; height: 400px; margin: 0 auto; border:1px solid #ccc;"></div>
+          <div data-map-container style="width: 100%; max-width: 600px; height: 400px; margin: 0 auto; border:1px solid #ccc;"></div>
         </div>
       `);
     }
@@ -148,9 +148,10 @@
 
           // Handle future changes to address field
           this.on('change', (event) => {
-            const changedAddress = event.changed?.[this.component.linkedAddressField];
-            console.log('[LeafletMap] Address field changed:', changedAddress);
-            moveMapToAddress(changedAddress);
+            const currentAddress = this.root?.submission?.data?.[this.component.linkedAddressField];
+            console.log("Current linkedAddressField is: ", this.component.linkedAddressField);
+            console.log('[LeafletMap] Address field changed (from full form data):', currentAddress);
+            moveMapToAddress(currentAddress);
           });
         };
 
