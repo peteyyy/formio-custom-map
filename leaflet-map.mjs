@@ -36,7 +36,8 @@
         label: 'Leaflet Map',
         type: 'leafletmap',
         key: 'leafletmap',
-        input: true
+        input: true,
+        linkedAddressField: '' // new config option
       }, ...extend);
     }
 
@@ -47,6 +48,20 @@
         group: 'advanced',
         weight: 50,
         schema: this.schema()
+      };
+    }
+
+    static editForm() {
+      return {
+        components: [
+          {
+            type: 'textfield',
+            key: 'linkedAddressField',
+            label: 'Linked Address Field Key',
+            tooltip: 'Enter the key of the address field to link the map to.',
+            input: true
+          }
+        ]
       };
     }
 
@@ -87,19 +102,37 @@
 
           const lat = 41.8781;
           const lng = -87.6298;
-          const radius = 800;
 
           const map = L.map(container).setView([lat, lng], 17);
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+          L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://carto.com/">CARTO</a>',
+            detectRetina: true
           }).addTo(map);
 
-          L.marker([lat, lng]).addTo(map);
+          const marker = L.marker([lat, lng]).addTo(map);
 
           setTimeout(() => {
             map.invalidateSize();
             console.log('[LeafletMap] invalidateSize() called');
           }, 0);
+
+          // Watch for address field changes
+          this.on('change', (event) => {
+            if (
+              event.changed &&
+              this.component.linkedAddressField &&
+              event.changed[this.component.linkedAddressField]
+            ) {
+              const address = event.changed[this.component.linkedAddressField];
+              if (address) {
+                console.log('[LeafletMap] Address changed:', address);
+                this.geocodeAddress(address).then(({ lat, lng }) => {
+                  map.setView([lat, lng], 17);
+                  marker.setLatLng([lat, lng]);
+                }).catch(err => console.error('[LeafletMap] Geocoding failed:', err));
+              }
+            }
+          });
         };
 
         waitForLeaflet();
@@ -107,7 +140,21 @@
       });
     }
 
-
+    geocodeAddress(address) {
+      const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+      return fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if (data.length > 0) {
+            return {
+              lat: parseFloat(data[0].lat),
+              lng: parseFloat(data[0].lon)
+            };
+          } else {
+            throw new Error('No results found');
+          }
+        });
+    }
   });
 
   console.log('[LeafletMap] Component registered.');
