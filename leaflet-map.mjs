@@ -119,12 +119,28 @@
 
           const moveMapToAddress = (addressValue) => {
             if (addressValue) {
-              if (typeof addressValue === 'object' && addressValue.lat && addressValue.lon) {
-                console.log('[LeafletMap] Using lat/lon from address object');
-                const lat = parseFloat(addressValue.lat);
-                const lng = parseFloat(addressValue.lon);
-                map.setView([lat, lng], 17);
-                marker.setLatLng([lat, lng]);
+              if (typeof addressValue === 'object') {
+                let lat, lng;
+
+                if (addressValue.position && addressValue.position.lat && addressValue.position.lon) {
+                  // Azure Maps style (preferred)
+                  console.log('[LeafletMap] Using Azure Maps position field');
+                  lat = parseFloat(addressValue.position.lat);
+                  lng = parseFloat(addressValue.position.lon);
+                }
+                else if (addressValue.lat && addressValue.lon) {
+                  // Nominatim fallback
+                  console.log('[LeafletMap] Using direct lat/lon fields');
+                  lat = parseFloat(addressValue.lat);
+                  lng = parseFloat(addressValue.lon);
+                }
+
+                if (lat !== undefined && lng !== undefined) {
+                  map.setView([lat, lng], 17);
+                  marker.setLatLng([lat, lng]);
+                } else {
+                  console.warn('[LeafletMap] Could not find valid lat/lon in address object:', addressValue);
+                }
               } 
               else if (typeof addressValue === 'string') {
                 console.log('[LeafletMap] Address is string, geocoding:', addressValue);
