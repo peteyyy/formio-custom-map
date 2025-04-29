@@ -19,11 +19,36 @@
       console.log('[LeafletMap] Leaflet JS loaded');
       window.leafletReady = true;
     };
+    script.onerror = () => {
+      console.error('[LeafletMap] Failed to load Leaflet JS');
+    };
     document.head.appendChild(script);
   } else {
     window.leafletReady = true;
   }
 })();
+
+// Inject Azure Maps Leaflet plugin too!
+(function injectAzureMapsLeafletPlugin() {
+  const id = 'azure-maps-leaflet-plugin';
+  if (!document.getElementById(id)) {
+    const script = document.createElement('script');
+    script.id = id;
+    script.src = 'https://peteyyy.github.io/formio-custom-map/azure-maps-leaflet.min.js';
+    script.onload = () => {
+      console.log('[LeafletMap] Azure Maps Leaflet Plugin loaded');
+      window.azureLeafletReady = true;
+    };
+    script.onerror = () => {
+      console.error('[LeafletMap] Failed to load Azure Maps Leaflet Plugin');
+    };
+    document.head.appendChild(script);
+  } else {
+    window.azureLeafletReady = true;
+  }
+})();
+
+
 
 (function waitForFormioAndRegister() {
   if (!window.Formio || !Formio.Components || !Formio.Components.components) {
